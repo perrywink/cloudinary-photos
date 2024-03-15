@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Sidebar } from "@/components/side-nav";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +18,25 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <div className="border-b">
+          <div className="container flex h-16 items-center px-4 font-bold">
+            PHOTOS APP
+            <div className="ml-auto flex items-center space-x-4">
+              <Avatar>
+                <AvatarImage src="https://github.com/shadcn.png" />
+                <AvatarFallback>CN</AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
+        </div>
+        <div className="flex items-start">
+          <Sidebar/>
+          <div className="px-4 py-6 w-full">
+            {children}
+          </div>
+        </div>
+      </body>
     </html>
   );
 }
