@@ -1,35 +1,58 @@
-"use client"
-import { Button } from "@/components/ui/button";
-import { CldUploadButton } from "next-cloudinary";
+import { CldImage } from "next-cloudinary";
+import UploadButton from "./upload-button";
+import cloudinary from 'cloudinary';
+import CloudinaryImage from "./cloudinary-image";
 
-export default function GalleryPage() {
+export interface CloudinaryResult {
+  public_id: string
+}
+
+export default async function GalleryPage() {
+  const results = (await cloudinary.v2.search
+    .expression('resource_type:image')
+    .sort_by('created_at', 'desc')
+    .max_results(30)
+    .execute()) as { resources: CloudinaryResult[] }
+
+  const MAX_COLS = 4
+  const getResultCols = (colIndex: number) => (
+    results.resources.filter((_, idx) => {
+      return idx % MAX_COLS === colIndex
+    })
+  )
+
   return (
-    <div className="w-100 px-2 flex items-center justify-between">
-      <div className="space-y-1">
-        <h2 className="text-2xl font-semibold tracking-tight">
-          Gallery
-        </h2>
-        <p className="text-sm text-muted-foreground">
-          Curated and update daily.
-        </p>
+    <section className="flex flex-col gap-4">
+      <div className="w-100 px-2 flex items-center justify-between">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Gallery
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            All your photos in one place.
+          </p>
+        </div>
+        <UploadButton />
       </div>
-      <CldUploadButton
-        uploadPreset="rwap8wb6"
-        // onSuccess={(result) => {
-        //   if (result.info && typeof result.info !== 'string') {
-        //     setImageID(result.info.public_id);
-        //   }
-        // }}
-      >
-        <Button asChild>
-          <div className="flex gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-4 h-4">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-            </svg>
-            Upload
-          </div>
-        </Button>
-      </CldUploadButton>
-    </div>
+      <div className="grid grid-cols-4 gap-3">
+        {
+          [getResultCols(0), getResultCols(1), getResultCols(2), getResultCols(3)]
+            .map((col, idx) => (
+              <div className="flex flex-col gap-4" key={idx}>
+                {col.map((image) => (
+                  <CloudinaryImage
+                    src={image.public_id}
+                    key={image.public_id}
+                    width="500"
+                    height="300"
+                    sizes="100vw"
+                    alt="Description of my image"
+                  />
+                ))}
+              </div>
+            ))
+        }
+      </div>
+    </section>
   )
 }
