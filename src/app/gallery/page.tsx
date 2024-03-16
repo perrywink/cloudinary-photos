@@ -5,12 +5,14 @@ import CloudinaryImage from "./cloudinary-image";
 
 export interface CloudinaryResult {
   public_id: string
+  tags: string[]
 }
 
 export default async function GalleryPage() {
   const results = (await cloudinary.v2.search
     .expression('resource_type:image')
     .sort_by('created_at', 'desc')
+    .with_field('tags')
     .max_results(30)
     .execute()) as { resources: CloudinaryResult[] }
 
@@ -19,7 +21,9 @@ export default async function GalleryPage() {
     results.resources.filter((_, idx) => {
       return idx % MAX_COLS === colIndex
     })
-  )
+  ) 
+
+  console.log(results)
 
   return (
     <section className="flex flex-col gap-4">
@@ -36,13 +40,14 @@ export default async function GalleryPage() {
       </div>
       <div className="grid grid-cols-4 gap-3">
         {
-          [getResultCols(0), getResultCols(1), getResultCols(2), getResultCols(3)]
+          Array.from({length: 4}, (_, i) => getResultCols(i))
             .map((col, idx) => (
               <div className="flex flex-col gap-4" key={idx}>
                 {col.map((image) => (
                   <CloudinaryImage
                     src={image.public_id}
                     key={image.public_id}
+                    image={image}
                     width="500"
                     height="300"
                     sizes="100vw"
