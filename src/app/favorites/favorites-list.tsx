@@ -1,7 +1,8 @@
 "use client"
 import CloudinaryImage from "@/components/cloudinary-image"
 import { CloudinaryResult } from "./page"
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
+import { fetchFavoritesAction } from "./actions"
 
 interface FavoritesListProps {
   results: {
@@ -9,13 +10,16 @@ interface FavoritesListProps {
   }
 }
 
-export default function FavoritesList({results}: FavoritesListProps) {
-  const [resources, setResources] = useState<CloudinaryResult[]>(results.resources)
+export default function FavoritesList() {
+  const [resources, setResources] = useState<CloudinaryResult[]>([])
 
   useEffect(() => {
-    setResources(results.resources)
-  }, [results.resources])
-
+    const handleFavFetch = async () => {
+      const res = await fetchFavoritesAction()
+      setResources(res)
+    }
+    handleFavFetch();
+  }, [])
 
   const MAX_COLS = 4
   const getResultCols = (colIndex: number) => (

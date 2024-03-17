@@ -1,6 +1,4 @@
-import cloudinary from 'cloudinary';
 import FavoritesList from './favorites-list';
-import { ForceRefresh } from '@/components/force-refresh';
 
 export interface CloudinaryResult {
   public_id: string
@@ -8,16 +6,8 @@ export interface CloudinaryResult {
 }
 
 export default async function FavoritesPage() {
-  const results = (await cloudinary.v2.search
-    .expression('resource_type:image AND tags=favorite')
-    .sort_by('created_at', 'desc')
-    .with_field('tags')
-    .max_results(30)
-    .execute()) as { resources: CloudinaryResult[] }
-
   return (
     <section className="flex flex-col gap-4">
-      <ForceRefresh />
       <div className="w-100 px-2 flex items-center justify-between">
         <div className="space-y-1">
           <h2 className="text-2xl font-semibold tracking-tight">
@@ -28,7 +18,7 @@ export default async function FavoritesPage() {
           </p>
         </div>
       </div>
-      <FavoritesList results={results}/>
+      <FavoritesList/>
     </section>
   )
 }
