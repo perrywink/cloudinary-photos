@@ -8,5 +8,4 @@ export async function favoriteAction(publicId: string, isFavorited: boolean) {
   } else {
     await cloudinary.v2.uploader.add_tag("favorite", [publicId])
   }
-  revalidatePath('/gallery')
 }

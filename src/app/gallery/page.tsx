@@ -1,8 +1,8 @@
-import { CldImage } from "next-cloudinary";
 import UploadButton from "./upload-button";
 import cloudinary from 'cloudinary';
-import CloudinaryImage from "./cloudinary-image";
+import CloudinaryImage from "@/components/cloudinary-image";
 
+export const dynamic = 'force-dynamic'
 export interface CloudinaryResult {
   public_id: string
   tags: string[]
@@ -22,8 +22,6 @@ export default async function GalleryPage() {
       return idx % MAX_COLS === colIndex
     })
   ) 
-
-  console.log(results)
 
   return (
     <section className="flex flex-col gap-4">
