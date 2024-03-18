@@ -1,15 +1,12 @@
 import UploadButton from "./upload-button";
 import cloudinary from 'cloudinary';
 import CloudinaryImage from "@/components/cloudinary-image";
-import { ForceRefresh } from "@/components/force-refresh";
+import { CloudinaryResult } from "@/types/cloudinary";
+import { unstable_noStore as noStore } from 'next/cache';
+import { Suspense } from "react";
 
-export const dynamic = 'force-dynamic'
-export interface CloudinaryResult {
-  public_id: string
-  tags: string[]
-}
-
-export default async function GalleryPage() {
+async function Gallery() {
+  noStore()
   const results = (await cloudinary.v2.search
     .expression('resource_type:image')
     .sort_by('created_at', 'desc')
@@ -22,11 +19,35 @@ export default async function GalleryPage() {
     results.resources.filter((_, idx) => {
       return idx % MAX_COLS === colIndex
     })
-  ) 
+  )
 
   return (
+    <div className="grid grid-cols-4 gap-3">
+      {
+        Array.from({ length: 4 }, (_, i) => getResultCols(i))
+          .map((col, idx) => (
+            <div className="flex flex-col gap-4" key={idx}>
+              {col.map((image) => (
+                <CloudinaryImage
+                  src={image.public_id}
+                  key={image.public_id}
+                  image={image}
+                  width="500"
+                  height="300"
+                  sizes="100vw"
+                  alt="Description of my image"
+                />
+              ))}
+            </div>
+          ))
+      }
+    </div>
+  )
+}
+
+export default async function GalleryPage() {
+  return (
     <section className="flex flex-col gap-4">
-      <ForceRefresh />
       <div className="w-100 px-2 flex items-center justify-between">
         <div className="space-y-1">
           <h2 className="text-2xl font-semibold tracking-tight">
@@ -38,26 +59,9 @@ export default async function GalleryPage() {
         </div>
         <UploadButton />
       </div>
-      <div className="grid grid-cols-4 gap-3">
-        {
-          Array.from({length: 4}, (_, i) => getResultCols(i))
-            .map((col, idx) => (
-              <div className="flex flex-col gap-4" key={idx}>
-                {col.map((image) => (
-                  <CloudinaryImage
-                    src={image.public_id}
-                    key={image.public_id}
-                    image={image}
-                    width="500"
-                    height="300"
-                    sizes="100vw"
-                    alt="Description of my image"
-                  />
-                ))}
-              </div>
-            ))
-        }
-      </div>
+      <Suspense fallback={null}>
+        <Gallery />
+      </Suspense>
     </section>
   )
 }

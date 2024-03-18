@@ -3,7 +3,7 @@ import Heart from "@/components/icons/heart"
 import { CldImage, CldImageProps } from "next-cloudinary"
 import { favoriteAction } from "../app/gallery/actions";
 import { useState, useTransition } from "react";
-import { CloudinaryResult } from "../app/gallery/page";
+import { CloudinaryResult } from "@/types/cloudinary";
 
 interface CloudinaryImageProps extends CldImageProps {
   image: CloudinaryResult
