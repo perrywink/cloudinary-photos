@@ -1,6 +1,6 @@
 "use client"
 import CloudinaryImage from "@/components/cloudinary-image"
-import { CloudinaryResult } from "@/types/cloudinary";
+import { CloudinaryResult } from "./page"
 import { useState, useEffect } from "react"
 
 interface FavoritesListProps {
